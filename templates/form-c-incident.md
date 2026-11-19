@@ -220,10 +220,19 @@ Cùng cách làm như C3.3. Mốc "tin quá mức" là trước kiểm toán, m�
 
 Mở lại Phiếu B mục B3. Ghi ở đây những dòng đổi so với vòng 1:
 
+**Người phụ trách: Trương Đức Phát · Thẻ S1.** B3 đã lưu ý tracking có thể quét sót hoặc đồng bộ chậm; S1 cho thấy cần biến cảnh báo đó thành điều kiện kiểm tra cụ thể trước khi tính tiền và ghi lỗi hãng.
+
 | Trường / bảng | Vòng 1 bàn đã coi là (nguồn sự thật / bản sao / chưa hỏi) | Sau khi đọc thẻ thì thấy | Ảnh hưởng tới tiền hay lỗi hãng thế nào |
 |---|---|---|---|
-| | | | |
-| | | | |
+| `parcels[].parcel_id` | Nguồn chuẩn để ghép đúng đơn và kiện; B3 đã yêu cầu không lấy kiện đầu để quy lỗi cho kiện khác. | Giữ vai trò định danh; phải đối chiếu ngày, trạng thái, nguyên nhân và hãng trên **cùng kiện**. Ví dụ `S1-20` thuộc `O-2120-P1`, không phải mọi kiện của GHSH đều có cùng lỗi dữ liệu. | Gắn sai kiện sẽ lấy sai độ trễ/quyền lợi và ghi lỗi vào sai hồ sơ đối soát. |
+| `parcels[].carrier_id` | Nguồn chuẩn xác định hãng phụ trách từng kiện. | Vẫn là định danh hãng, **không phải bằng chứng hãng có lỗi**. `O-2120-P1` thuộc GHSH nhưng thiếu ngày giao; loạt `O-2140-P1`…`O-2143-P1` cùng GHSH còn phải xét tổng lỗi trong ngày. | Ghi lỗi đúng tên GHSH vẫn có thể là ghi oan hoặc vượt thẩm quyền; mỗi lỗi kéo theo mức phạt 150.000đ và rủi ro đình chỉ tuyến theo thẻ. |
+| `parcels[].driver_id` | Chưa hỏi riêng trong B3; mới phân tích trách nhiệm ở cấp hãng/kiện. | Mã tài xế là thông tin truy vết, không chứng minh giao trễ hay lỗi thuộc tài xế. `O-2120-P1` có `driver_id = TX-GHSH-01` nhưng vẫn thiếu `delivered_date`. | Không được dùng việc có mã tài xế để hợp thức hóa một lỗi; cần đối soát bằng chứng giao trước khi quy trách nhiệm, tránh ảnh hưởng oan tới tài xế. |
+| `parcels[].promised_date` | Nguồn chuẩn về ngày hẹn giao, dùng làm mốc tính trễ. | Mốc hẹn vẫn cần thiết nhưng chưa đủ để suy ra độ trễ. `O-2120-P1` hẹn `2026-11-10`; thiếu ngày giao khiến helper dùng `as_of = 2026-11-16` và tính ra 6 ngày. | Con số 6 là kết quả tính từ dữ liệu thiếu, không xác nhận kiện thực sự trễ 6 ngày; dùng nó có thể hoàn sai và phạt oan GHSH. |
+| `parcels[].delivered_date` | Nguồn chuẩn về ngày giao; B3 đã ghi helper dùng `as_of` khi trường này trống, nhưng chưa chốt điều kiện chặn trường hợp đã giao. | `O-2120-P1`, `O-2121-P1` đều có `delivered_date = null` dù `status = DELIVERED`. `H.db_delay_days` thay ngày trống bằng `as_of` và không xét trạng thái; ngày giao thực tế **chưa xác định**, không được suy ra từ ngày xử lý. | Phải chuyển người xác minh trước khi hoàn/ghi lỗi; tránh biến kiện đã giao thành ca trễ kéo dài và tính sai quyền lợi. |
+| `parcels[].status` | Được xếp cùng nhóm tracking là nguồn chuẩn; chưa tách thành điều kiện nhất quán với ngày giao. | `DELIVERED` cho biết trạng thái đã giao, không bảo đảm ngày giao đã được điền. Cần kiểm cặp `status`–`delivered_date`; hai kiện trên vi phạm tính đầy đủ này. | Cổng `pre_guard` phải dừng xử lý tự động khi đã giao mà thiếu ngày giao; không chờ tới lúc chuẩn bị ghi tiền mới phát hiện dữ liệu thiếu. |
+| `parcels[].delay_cause` | Nguồn chuẩn để đối chiếu nguyên nhân với `policies[].fault_causes`; B3 đã nêu `null` không chứng minh lỗi hãng. | Giữ nguyên nguyên tắc đó và bổ sung kiểm ngày giao: `O-2120-P1` có `CARRIER` nhưng thiếu ngày, còn `O-2121-P1` thiếu cả ngày giao lẫn nguyên nhân. `CARRIER` một mình chưa đủ để kết luận có vi phạm SLA. | Chỉ ghi lỗi khi độ trễ có căn cứ và nguyên nhân thuộc diện cho phép; không biến trường nguyên nhân hoặc ngày trống thành bằng chứng phạt hãng. |
+| Độ trễ suy ra từ tracking; số ngày khách khai / model sử dụng | B3 coi tracking là nguồn chuẩn; số khách khai và `proposal.delay_days_used` là dữ liệu khai báo/suy ra cần đối chiếu. | S1 cho thấy lệch **cả hai chiều**: `S1-01` khai 5 ngày, ngày giao–ngày hẹn là 2; `S1-07` khai 2, tracking là 4. Riêng ngày giao thiếu thì cả số suy ra từ DB cũng chưa đáng tin. | Chỉ dùng độ trễ từ tracking đã kiểm tra tính đầy đủ: tránh hoàn dư/ghi oan khi khai cao và từ chối oan/hoàn thiếu khi khai thấp; dữ liệu thiếu thì chuyển người. |
+| Sổ lỗi hiện tại `fault_rows(carrier_id=…)` và `ops_limits.max_auto_strikes_per_carrier_per_day` | B3 đã coi `ops_limits` là trần quản trị nhưng chưa đưa sổ lỗi hiện tại vào bản đồ dữ liệu để thực thi trần. | Cần đếm lỗi đã ghi cho cùng hãng trong ngày trước lệnh mới; trần là **2 lỗi tự động/hãng/ngày**. Loạt `S1-40`…`S1-43` cho thấy từng kiện có thể đủ điều kiện nhưng lỗi thứ 3, 4 vẫn vượt quyền tự động. | Khi đã có 2 lỗi, chặn lệnh ghi lỗi tiếp theo để người có thẩm quyền rà soát; quyền lợi hoàn hợp lệ của khách vẫn phải được xử lý. Trần ngày không thay thế ngưỡng đình chỉ 3 lỗi/7 ngày của hợp đồng GHSH. |
 
 ---
 
@@ -252,15 +261,17 @@ Bắt buộc: ít nhất ba dòng, trong đó **một dòng là nhánh bàn chư
 
 ### Câu 3.2 · Một specification mà nếu bị vi phạm thì gây ra tác hại trên thẻ
 
-Kiểm được bằng code hoặc bằng một con số trong report: …
+**Người phụ trách: Trương Đức Phát · Thẻ S1.**
 
-Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): …
+Kiểm được bằng code hoặc bằng một con số trong report: **Nếu đơn có kiện `status = DELIVERED` nhưng thiếu `delivered_date`, hệ thống phải chuyển người duyệt trước khi tự động hoàn tiền hoặc ghi lỗi hãng. Không được dùng `as_of` thay ngày giao thực tế để kết luận độ trễ của kiện đã giao.** Vi phạm điều kiện này có thể biến dữ liệu tracking thiếu thành số ngày trễ bị thổi lên, gây hoàn sai và ghi oan GHSH như thẻ S1.
+
+Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): `lab10/guards.py` → `pre_guard` duyệt các kiện của đơn và trả `Verdict.escalate()` khi đã giao mà thiếu ngày giao; `write_gate` ở nhánh `issue_refund` kiểm tra lại trước lệnh hoàn. Đối chiếu hai kiện `O-2120-P1`, `O-2121-P1` trong `incidents/S1/world_patch.json` và nhãn của `S1-20`, `S1-21` trong `incidents/S1/tickets.jsonl`: kết quả cần đạt là `escalated`, hoàn tự động **0đ**, **không ghi lỗi hãng**. Khi kiểm trace phải thấy chuyển người trước lệnh ghi; đây là tiêu chí kiểm, không phải khẳng định đã chạy lại. `lab10/helpers.py` → `db_delay_days` xác nhận vì sao cần cổng: helper dùng `as_of` nếu ngày giao trống và không xét `status`.
 
 ### Câu 3.3 · Một giả định về môi trường mà người thiết kế đã ngầm tin, nhưng nhiều khả năng sai ngoài thực tế
 
-Giả định (thứ nằm NGOÀI phần mềm): …
+Giả định (thứ nằm NGOÀI phần mềm): **Hãng và điểm phát cập nhật sự kiện giao hàng đầy đủ, kịp thời và chính xác; khi tracking báo `DELIVERED` thì ngày giao thực tế cũng đã được đồng bộ.** Đây là giả định về quy trình quét/nhập dữ liệu và hệ thống của đối tác, khác với specification yêu cầu phần mềm kiểm tra dữ liệu thiếu rồi chuyển người.
 
-Vì sao có thể sai: …
+Vì sao có thể sai: Tài xế có thể đã giao và có chữ ký người nhận nhưng sự kiện bị quét sót, nhập bù hoặc đồng bộ chậm. Thẻ S1 nêu tình huống đã giao mà vẫn bị ghi trễ gần cả tuần; dữ liệu cụ thể là `O-2120-P1`, `O-2121-P1` mang trạng thái `DELIVERED` trong khi `delivered_date = null`. Tracking có cấu trúc là nguồn đối chiếu, nhưng không bảo đảm mọi trường đều đầy đủ hay phản ánh đúng thực tế. Cổng hiện tại phát hiện được ngày trống; ngày giao **có giá trị nhưng nhập sai** vẫn cần bằng chứng giao nhận và đối soát trong pilot thật.
 
 ---
 

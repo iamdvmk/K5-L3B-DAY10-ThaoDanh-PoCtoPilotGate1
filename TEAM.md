@@ -54,6 +54,29 @@ Mỗi thành viên tự viết một mục bên dưới (chép mẫu, đổi ti�
 - Một điều học được: Guardrail không chỉ dừng ở việc bảo vệ ví tiền của công ty (ngăn hoàn dư) mà còn đóng vai trò sống còn trong việc bảo vệ đối tác thứ ba (hãng vận chuyển) trước sự dồn dập lỗi của hệ thống tự động để tránh rủi ro pháp lý và đứt gãy chuỗi cung ứng.
 - Một điều còn chưa chắc: Khi cổng chặn lệnh phạt tự động thứ 3 trở đi để bảo vệ trần ngày của hãng, quy trình đối soát thủ công ngày hôm sau cần cơ chế đồng bộ thế nào để nếu hãng thực sự vi phạm nhiều ca thì vẫn có bằng chứng xử lý mà không bị sót việc.
 
+## TruongDucPhat-2A202603757
+
+### Phần việc phụ trách
+
+- Vai trong bàn: Sản phẩm và kinh doanh.
+- Phiếu C, thẻ S1: C3.5 (mở lại bản đồ dữ liệu) và C5 (specification, giả định môi trường).
+
+### Đóng góp cụ thể
+
+- Bổ sung đối chiếu từng trường của `parcel`, phân biệt dữ liệu chuẩn với dữ liệu đầy đủ/đã được xác minh; làm rõ tác động tới quyền lợi khách, tiền hoàn và lỗi hãng.
+- Viết điều kiện chuyển người khi kiện đã giao nhưng thiếu ngày giao và cách kiểm bằng cổng/nhãn S1; nêu giả định về việc cập nhật tracking của hãng.
+- Sử dụng trợ lý AI để đọc dữ liệu/code trong repo, đối chiếu Phiếu B mục B3 và soạn nội dung C3.5, C5. Không chạy lại đánh giá trong phần việc này.
+
+### Bằng chứng
+
+- `templates/form-c-incident.md`: mục C3.5 và C5.
+- Nguồn đối chiếu: `incidents/S1/card.md`, `world_patch.json`, `tickets.jsonl`; `lab10/helpers.py`, `lab10/guards.py`; Phiếu B mục B3.
+
+### Exit ticket (dự thảo để Phát rà lại)
+
+- Một điều học được: nguồn dữ liệu chuẩn vẫn có thể thiếu hoặc mâu thuẫn; cần kiểm tính đầy đủ trước khi dùng dữ liệu để quyết định tiền và trách nhiệm của hãng.
+- Một điều còn chưa chắc: trong pilot thật, làm sao phát hiện ngày giao đã điền nhưng sai, và lấy bằng chứng giao nhận nào để xác minh kịp thời.
+
 ## HoVaTen-MSSV
 
 ### Phần việc phụ trách
