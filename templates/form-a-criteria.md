@@ -73,7 +73,7 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
 
-Giải thích một câu: Khoảng tin cậy cho biết con số đo được dao động tới đâu chỉ vì may rủi.
+Giải thích một câu: Giải thích một câu: Y hơn X đúng 1/50 lần chạy, và pass_rate 1,0 của Y vẫn nằm trong khoảng tin cậy 95% [0,94; 1,0] của X, nên chênh lệch này có thể chỉ do ngẫu nhiên; chưa đủ căn cứ nói Y tốt hơn X.
 
 ---
 
