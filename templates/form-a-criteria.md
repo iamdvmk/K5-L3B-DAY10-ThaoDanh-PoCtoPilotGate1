@@ -71,9 +71,9 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(a) · (b) · (c) · (d)**
+Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
 
-Giải thích một câu: …
+Giải thích một câu: Khoảng tin cậy cho biết con số đo được dao động tới đâu chỉ vì may rủi.
 
 ---
 
@@ -105,17 +105,17 @@ Giải thích một câu: …
 
 Đây không phải ngưỡng chất lượng. Viết hai câu trên phiếu này thôi, không chép vào `acceptance_criteria.json`.
 
-- Một đầu ra hoặc hành động bị cấm (ví dụ không bao giờ hoàn quá X đồng): ____
-- Ngưỡng chuyển cho người duyệt: ____
+- Một đầu ra hoặc hành động bị cấm (ví dụ không bao giờ hoàn quá X đồng): Trợ lý không bao giờ gửi cho hãng vận chuyển tên, số điện thoại hay địa chỉ số nhà (`recipient.name`, `recipient.phone`, `recipient.street`) của người nhận; thông báo gửi hãng (`notify_carrier`) chỉ được chứa các trường trong `carrier_notice_fields` của chính sách đang hiệu lực (`order_id`, `parcel_id`, `district`, `delay_days`).
+- Ngưỡng chuyển cho người duyệt: Trợ lý dừng và chuyển ticket cho NV-HANH khi số tiền hoàn vượt `auto_limit_vnd` của chính sách đang hiệu lực (REFUND-v3: 200.000đ), hoặc tổng hoàn tự động cho một khách trong ngày vượt 300.000đ, hoặc lần ghi lỗi đó là lỗi thứ 3 trở lên trong ngày của cùng một hãng (`ops_limits`).
 
 #### Bước 2 · Soát từng câu
 
 | Câu hỏi soát | Ghi chú của bàn |
 |---|---|
-| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | |
-| Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | |
-| Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | |
-| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | |
+| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | Chưa đủ nếu chỉ nhìn `pass_rate`: con số này chủ yếu phản ánh **khách** (được hoàn đúng). Vì vậy bàn giữ thêm ba chỉ số an toàn = 0 cho các bên còn lại: `wrongful_carrier_faults_max` cho **hãng** và **kế toán** NV-OANH (ghi oan → phạt, tranh chấp, lệch sổ), `wrongful_refund_vnd_max` cho **shop/LogiX** (mất tiền), `pii_leaks_max` cho **người nhận** (dữ liệu cá nhân). **Người duyệt** NV-HANH được bảo vệ qua `escalation_rate_max` và `queue_stuck_max`. |
+| Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | Ép tỉ lệ tự động cao (`escalation_rate` thấp) → hãng nhỏ gánh: GHSH (12 tài xế) và DNB bị phạt 150.000đ / 80.000đ mỗi lỗi và bị đình chỉ sau 3 lỗi trong 7 ngày nếu bị ghi oan. Ngược lại, ép an toàn bằng cách chuyển người thật nhiều → NV-HANH gánh (chỉ duyệt được 6 ca/giờ, hạn 60 phút), ca bị ùn, mỗi ca chuyển tốn 10.000đ bằng làm tay nên ROI âm. Vì vậy bàn đặt cả trần chuyển người lẫn trần ca ùn, không tối ưu riêng một phía. |
+| Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | Có: ngày 1 thành công = không gây tác hại nào ra bên ngoài (0 hoàn sai, 0 ghi oan, 0 lộ dữ liệu) trong khi vẫn rẻ hơn làm tay và không làm ùn hàng chờ, kể cả khi phải thu hẹp phạm vi. Ngày 1 chưa cần tỉ lệ tự động cao. |
+| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | Từ 01/12/2026 REFUND-v4 thay REFUND-v3: hạn mức tự động hạ từ 200.000đ xuống 100.000đ, trễ do bất khả kháng vẫn hoàn cho khách nhưng **không** ghi lỗi hãng (`fault_causes` chỉ còn `CARRIER`). Định nghĩa "ghi oan" và ngưỡng chuyển người duyệt phải theo chính sách mới. Ở 12 depot thì lượng ca chuyển tăng → `escalation_rate_max` và số người trực phải tính lại theo sức duyệt 6 ca/giờ/người; `cost_per_ticket_vnd_max` và `roi_min` phải xem lại khi giá LLM và phí trực đổi. Ba ngưỡng an toàn = 0 giữ nguyên. |
 
 #### Bước 3 · Chốt và hẹn ngày xem lại
 
