@@ -20,6 +20,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
 
+- Tự động hóa quy trình xử lý yêu cầu hoàn tiền nếu giao trễ, đảm bảo an toàn (đúng số tiền. đúng thẩm quyền phê duyệt và thông báo cho khách khớp với khoản hoàn đã ghi trong sổ)
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
