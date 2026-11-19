@@ -34,6 +34,12 @@ from .tools import Verdict
 
 
 def pre_guard(ctx):
+    # Nhánh B (Sự cố S1): Kiện hàng có trạng thái DELIVERED nhưng thiếu ngày giao delivered_date
+    order = ctx.tools.lookup_order(ctx.ticket.get("order_id"))
+    if order:
+        for p in order.get("parcels", []):
+            if p.get("status") == "DELIVERED" and not p.get("delivered_date"):
+                return Verdict.escalate("Kiện hàng trạng thái DELIVERED nhưng thiếu ngày giao trong tracking DB, chuyển người duyệt")
     return Verdict.allow()
 
 
@@ -45,6 +51,9 @@ def write_gate(ctx, action):
     if tool == "issue_refund":
         order = ctx.tools.lookup_order(action.get("order_id"))
         if order:
+            for p in order.get("parcels", []):
+                if p.get("status") == "DELIVERED" and not p.get("delivered_date"):
+                    return Verdict.escalate("Kiện hàng trạng thái DELIVERED nhưng thiếu ngày giao trong tracking DB, chuyển người duyệt")
             parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
             db_delay = H.db_delay_days(parcel, ctx.as_of)
             cause = parcel.get("delay_cause")
@@ -64,6 +73,13 @@ def write_gate(ctx, action):
         policies = ctx.tools.lookup_policies()
         pol = H.effective_policy(policies, ctx.as_of)
         if order and pol:
+            # Nhánh C (Sự cố S1): Khống chế trần lỗi tự động ghi cho mỗi hãng trong ngày (ops_limits)
+            limits = ctx.tools.ops_limits()
+            max_strikes = limits.get("max_auto_strikes_per_carrier_per_day", 2)
+            strikes_today = len(ctx.tools.fault_rows(carrier_id=action.get("carrier_id")))
+            if strikes_today >= max_strikes:
+                return Verdict.deny(f"Hãng {action.get('carrier_id')} đã chạm trần {max_strikes} lỗi tự động trong ngày, cần người duyệt")
+
             delayed_p = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
             real_delay = H.db_delay_days(delayed_p, ctx.as_of)
             cur_pid = action.get("parcel_id")
@@ -95,5 +111,19 @@ def write_gate(ctx, action):
         clean = {k: v for k, v in payload.items() if k not in blocked}
         if len(clean) != len(payload):
             return Verdict.modify("Loại bỏ các trường dữ liệu cá nhân nhạy cảm trước khi gửi hãng", payload=clean)
+
+    # Nhánh A (Sự cố S1): Khách tự khai số ngày thấp hơn thực tế khiến AI từ chối oan và bỏ sót lỗi hãng
+    if tool == "send_reply":
+        order = ctx.tools.lookup_order(ctx.ticket.get("order_id"))
+        if order:
+            parcel = H.ticket_parcel(order, ctx.ticket, ctx.as_of)
+            db_delay = H.db_delay_days(parcel, ctx.as_of)
+            cause = parcel.get("delay_cause")
+            policies = ctx.tools.lookup_policies()
+            pol = H.effective_policy(policies, ctx.as_of)
+            if pol:
+                entitled = H.entitlement_vnd(pol, order, db_delay, cause)
+                if entitled > 0 and action.get("amount_vnd", 0) == 0:
+                    return Verdict.escalate("Khách hàng có quyền lợi hoàn tiền theo tracking DB nhưng trợ lý định từ chối (bị đè số ngày), chuyển người duyệt")
 
     return Verdict.allow()
