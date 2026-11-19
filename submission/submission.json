@@ -5,8 +5,8 @@
   "decision_v1": "Tiếp tục",
   "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "<dán dòng 1 ở trên>",
-    "reduce_or_prevent": "<dán dòng 2>",
-    "measure_in_pilot": "<dán dòng 3>"
+    "environment_assumption": "Tracking DB của hãng là nguồn sự thật đầy đủ và đúng: khi status = DELIVERED thì delivered_date được quét kịp và đúng ngày; thực tế hãng nhỏ có thể quét chậm hoặc nhập sai, khi đó cổng so với DB cũng sai theo.",
+    "reduce_or_prevent": "NGĂN được ba nhánh đã thấy (lời khách lệch DB, thiếu ngày giao, lỗi thứ 3+ của hãng trong ngày) vì cổng chặn ngay trước lệnh ghi và đọc DB, không đọc chữ khách; nhưng chỉ GIẢM tác hại tổng thể vì vẫn phụ thuộc DB đúng, lỗi thứ 1–2 vẫn có thể oan, và lỗi cộng dồn 7 ngày mới chỉ được giám sát.",
+    "measure_in_pilot": "Tỉ lệ kiện DELIVERED thiếu hoặc sai delivered_date theo từng hãng; số lỗi theo hãng trong 7 ngày và tỉ lệ bị hãng khiếu nại; sức duyệt thật của NV-HANH khi tỉ lệ chuyển người lên khoảng 0,38."
   }
 }

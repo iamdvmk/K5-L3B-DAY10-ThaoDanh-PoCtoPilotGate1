@@ -1,1 +1,2 @@
 config/acceptance_criteria.json -text
+submission/** -text

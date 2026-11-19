@@ -97,7 +97,7 @@ Trưởng nhóm, vai **Vận hành và pháp lý**. Giữ máy chạy chính c�
 ### Bằng chứng
 
 - Commit: `58ef85d` (Sign acceptance criteria) · `f25b9b4` (`.gitattributes` giữ byte file tiêu chí) · `0dab211` (Phiếu A, A5) · `9d852cc` (B4, B5, B6) · `015fff6` (B0 dòng 4, B7.5, B7.6, `stop_conditions`) · `78074c8` (chốt cổng vòng 1 `622e141c`, quyết định v1) · `c319bb8` (nhận thẻ S1) · `fcf7ee6` (C0, C1, C4, C6) · commit cuối (C9–C12, submission).
-- Mã lần chạy: `R-base-before-20261119-163701-bde05c` (baseline) · `R-base-after-20261119-173445-96af16` (thử 2 người trực) · `R-base-prepared-20261119-173850-3b514c` (mốc prepared, `lab10.gate` 9/9 ĐẠT) · `R-S1-grade-20261119-174415-3b514c` (grade trước khi sửa) · `<GRADE>` (grade cuối, PASS-VISIBLE).
+- Mã lần chạy: `R-base-before-20261119-163701-bde05c` (baseline) · `R-base-after-20261119-173445-96af16` (thử 2 người trực) · `R-base-prepared-20261119-173850-3b514c` (mốc prepared, `lab10.gate` 9/9 ĐẠT) · `R-S1-grade-20261119-174415-3b514c` (grade trước khi sửa) · `R-S1-grade-20261119-201754-9b5303` (grade cuối, PASS-VISIBLE).
 - Hash: tiêu chí `8fe15243` · chốt vòng 1 `622e141c`.
 - Dòng trong phiếu: Phiếu A mục A1 (1.2), A2 (1.4), A4, A5 · Phiếu B mục B4–B6, B7.5, B7.6, B8 · Phiếu C mục C0, C1, C4, C6, C9–C12.
 
@@ -105,21 +105,3 @@ Trưởng nhóm, vai **Vận hành và pháp lý**. Giữ máy chạy chính c�
 
 - Một điều học được: cổng an toàn không chỉ nằm trong code. Phần lớn tác hại của thẻ S1 (hãng nhỏ bị đình chỉ oan) đến từ một con số vận hành đã thống nhất (2 lỗi/hãng/ngày) mà không ai biến thành cổng hay chỉ số theo dõi. Ngoài ra, bằng chứng (hash, nhật ký chạy) phải được bảo vệ ngang với kết quả: một ký tự xuống dòng khác hệ điều hành đủ làm "tiêu chí bị sửa sau khi ký".
 - Một điều còn chưa chắc: trong pilot thật, làm sao chặn lỗi cộng dồn theo 7 ngày (ngưỡng đình chỉ trong hợp đồng) khi cổng chỉ nhìn được sổ lỗi của ngày hiện tại, và ai chịu trách nhiệm đối soát nếu tracking của chính hãng ghi sai ngày giao.
-
-## HoVaTen-MSSV
-
-### Phần việc phụ trách
-
-Vai trong bàn; câu nào của đề, mục nào của phiếu A/B/C, file nào (`lab10/guards.py`, `config/operating_gates.json`, …).
-
-### Đóng góp cụ thể
-
-...
-
-### Bằng chứng
-
-Mã commit, mã lần chạy (`runs/<mã>`), dòng trong phiếu.
-
-### Exit ticket
-
-Một điều học được, một điều còn chưa chắc.

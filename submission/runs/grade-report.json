@@ -1,35 +1,11 @@
 {
- "run_id": "R-S1-grade-20261119-200129-a8bbc2",
+ "run_id": "R-S1-grade-20261119-201754-9b5303",
  "incident": "S1",
  "grader_version": "lab10-1.0",
- "code_hash": "a8bbc2e09cede0bad51a22121ba3ae28f27aa1abf4e373aadd0591e5131d99df",
+ "code_hash": "9b5303adccc91e0964c4de0959bbfe5c15743b73c7958e4b7928a7f066d9df7a",
  "integrity": {
-  "ok": false,
-  "changed": [
-   "data/tickets.jsonl",
-   "data/world.json",
-   "incidents/S1/card.json",
-   "incidents/S1/card.md",
-   "incidents/S1/tickets.jsonl",
-   "incidents/S1/world_patch.json",
-   "lab10/__init__.py",
-   "lab10/_gradectx.py",
-   "lab10/_noop_guards.py",
-   "lab10/agent.py",
-   "lab10/check_submission.py",
-   "lab10/checkpoint.py",
-   "lab10/criteria.py",
-   "lab10/eval.py",
-   "lab10/gate.py",
-   "lab10/grade.py",
-   "lab10/helpers.py",
-   "lab10/mock_llm.py",
-   "lab10/ops.py",
-   "lab10/tools.py",
-   "lab10/trace.py",
-   "lab10/world.py",
-   "tests/test_public.py"
-  ],
+  "ok": true,
+  "changed": [],
   "manifest": "MANIFEST.json"
  },
  "criteria": {
@@ -48,10 +24,10 @@
   "status": "khớp"
  },
  "checkpoint": {
-  "ok": false,
+  "ok": true,
   "taken": true,
   "hash": "622e141c1461efbbb9772b09208824884561bb4ccf4fa3139ef1ce4d941cee6d",
-  "problem": "bản chốt vòng 1 ĐÃ BỊ SỬA sau khi chốt",
+  "problem": null,
   "taken_at": "2026-11-19T17:38:43"
  },
  "before": {
@@ -1320,9 +1296,9 @@
   }
  },
  "run_ids": {
-  "before": "R-S1-before-20261119-200129-a8bbc2",
-  "prepared": "R-S1-prepared-20261119-200129-a8bbc2",
-  "after": "R-S1-after-20261119-200129-a8bbc2"
+  "before": "R-S1-before-20261119-201754-9b5303",
+  "prepared": "R-S1-prepared-20261119-201754-9b5303",
+  "after": "R-S1-after-20261119-201754-9b5303"
  },
  "visible": {
   "before_red": true,
@@ -1389,15 +1365,15 @@
   "rule": "Chỉ được chọn 'Tiếp tục' khi không vượt trần nào và mọi ngưỡng đã ký đều đạt. Thu hẹp, Cải tiến thêm, Dừng có lý do và có số thì vẫn là quyết định đạt."
  },
  "checks": {
-  "integrity": false,
+  "integrity": true,
   "criteria": true,
   "visible": true,
   "hidden": null,
   "regression": true,
   "monitor": true
  },
- "hard_gates_ok": false,
+ "hard_gates_ok": true,
  "score": null,
- "verdict": "FAIL",
- "seconds": 0.419
+ "verdict": "PASS-VISIBLE (chưa chạy test ẩn)",
+ "seconds": 0.892
 }
