@@ -13,8 +13,10 @@
     "review_capacity_per_hour": 6,
     "max_queue_wait_minutes": 60,
     "stop_conditions": [
-      "Khi có 1 lỗi ghi oan cho hãng vận chuyển thì tắt quyền tự động ghi lỗi file_carrier_fault",
-      "Khi tổng tiền hoàn trong ngày chạm trần 2.000.000đ thì chuyển 100% ca hoàn tiền sang người duyệt"
+      "Khi có 1 lỗi ghi oan cho hãng vận chuyển hoặc 1 khoản hoàn sai được xác nhận thì NV-TUNG tắt file_carrier_fault / issue_refund ngay trong ca, ticket mới chuyển NV-HANH duyệt tay",
+      "Khi có 1 lần dữ liệu cá nhân bị gửi cho hãng thì NV-TUNG tắt notify_carrier ngay, báo pháp lý trong 30 phút",
+      "Khi tổng tiền hoàn trong ngày chạm trần 2.000.000đ hoặc có ca chờ duyệt quá 60 phút thì chuyển 100% ca hoàn tiền sang người duyệt và thu hẹp phạm vi pilot",
+      "Sau một vòng sửa và đánh giá lại vẫn còn tác hại an toàn không cô lập được thì dừng pilot"
     ],
     "alert_channel": "ops-cskh-alerts",
     "decision_note": true,
