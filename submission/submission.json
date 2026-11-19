@@ -1,12 +1,12 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "K5-L3B-DAY10-ThaoDanh-PoCtoPilotGate1",
+  "members": ["DaoVuMinhKhanh-2A202603878", "DaoNguyenQuangThanh-2A202603754", "TruongDucPhat-2A202603757"],
+  "incident": "S1",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Tiếp tục",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "<dán dòng 1 ở trên>",
+    "reduce_or_prevent": "<dán dòng 2>",
+    "measure_in_pilot": "<dán dòng 3>"
   }
 }
